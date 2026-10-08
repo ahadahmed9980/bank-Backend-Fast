@@ -1,0 +1,9 @@
+from typing import Optional, Any
+
+from pydantic import BaseModel
+
+
+class ApiResponse(BaseModel):
+    status: str
+    message: str
+    data: Any

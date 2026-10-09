@@ -3,7 +3,9 @@ from app.schema.user_schema import UserCreate
 from app.model.user_model import userRegister
 from app.utils.Api_response import ApiResponse
 
+
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
 
 @router.post(
     "/register", response_model=ApiResponse, status_code=status.HTTP_201_CREATED

@@ -7,9 +7,8 @@ db = client[DB_NAME]
 
 
 users_collection = db["users"]
+
+
 async def create_indexes():
 
-     users_collection.create_index(
-        [("email", ASCENDING)],
-        unique=True
-    )
+    users_collection.create_index([("email", ASCENDING)], unique=True)

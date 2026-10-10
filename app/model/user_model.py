@@ -1,9 +1,13 @@
 from app.utils.objects import from_Object_id, to_Object_id
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from datetime import datetime, timezone
-from app.database.mongodb import users_collection
+from app.database.mongodb import users_collection, session_collection
 from app.utils.password import hash_Password, compare_password
-
+from app.utils.tokens import (
+    create_refresh_token,
+    hash_refresh_token,
+    creat_access_token,
+)
 
 
 # reg user
@@ -30,16 +34,52 @@ async def userRegister(data: dict) -> dict:
 
 
 # login user
-async def userLogin(data:dict)->dict:
-    isExist= await users_collection.find_one({"email":data['email']})
-    if  not isExist:
-          raise HTTPException(status_code=404, detail="Invalid email or password")
-    
-    
-    
-
-
-
-
-
-
+async def userLogin(
+    data: dict,
+    ip: str | None,
+    user_agent: str | None,
+) -> dict:
+    user = await users_collection.find_one({"email": data["email"]})
+    if not user:
+        raise HTTPException(
+            tatus_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+        )
+    if not compare_password(data["password"], user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
+    # session create
+    session_document = {
+        "userId": user["_id"],
+        "ip": ip,
+        "userAgent": user_agent,
+        "revoke": False,
+        "refreshTokenHash": None,
+        "createdAt": datetime.now(timezone.utc),
+    }
+    session_result = await session_collection.insert_one(session_document)
+    session_id = session_result.inserted_id
+    access_token = creat_access_token(user["_id"], session_id)
+    refresh_token = create_refresh_token(user["_id"], session_id)
+    # save hash in db
+    await session_collection.update_one(
+        {"_id": session_id},
+        {"$set": {"refreshTokenHash": hash_refresh_token(refresh_token)}},
+    )
+    return {
+        "status": "success",
+        "message": "Login successful",
+        "data": {
+            "user": {
+                "id": str(user["_id"]),
+                "name": user.get("name"),
+                "email": user["email"],
+            },
+            "tokens": {
+                "accessToken": access_token,
+                "refreshToken": refresh_token,
+                "tokenType": "bearer",
+            },
+        },
+    }

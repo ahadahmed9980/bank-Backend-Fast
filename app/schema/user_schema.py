@@ -38,7 +38,7 @@ class UserCreate(BaseModel):
         return value
 
 
-class UserLogin(BaseModel):
+class UserLogin_Schema(BaseModel):
 
     email: EmailStr
     password: str = Field(..., min_length=6)

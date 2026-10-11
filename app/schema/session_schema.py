@@ -9,16 +9,3 @@ class SessionModel(BaseModel):
     refreshTokenHash: str
     ip: str
     userAgent: str
-
-
-class SessionResponse(BaseModel):
-    id: str
-    userId: str
-    ip: str
-    userAgent: str
-    revoke: bool = False
-    accessToken: str
-    refreshToken: str
-    revokedAt: Optional[datetime] = None
-    createdAt: Optional[datetime] = None
-    updatedAt: Optional[datetime] = None

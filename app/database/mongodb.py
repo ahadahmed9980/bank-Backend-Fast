@@ -1,4 +1,3 @@
-
 from pymongo import ASCENDING, AsyncMongoClient
 from app.config import MONGO_URI, DB_NAME
 
@@ -11,11 +10,6 @@ session_collection = db["sessions"]
 
 
 async def create_indexes():
-    await users_collection.create_index(
-        [("email", ASCENDING)],
-        unique=True
-    )
+    await users_collection.create_index([("email", ASCENDING)], unique=True)
 
-    await session_collection.create_index(
-        [("userId", ASCENDING)]
-    )
+    await session_collection.create_index([("userId", ASCENDING)])

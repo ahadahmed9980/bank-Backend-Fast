@@ -42,7 +42,7 @@ async def userLogin(
     user = await users_collection.find_one({"email": data["email"]})
     if not user:
         raise HTTPException(
-            tatus_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
     if not compare_password(data["password"], user["password"]):
         raise HTTPException(
@@ -83,3 +83,28 @@ async def userLogin(
             },
         },
     }
+
+
+# get active session
+async def getActiveSession(user_id, session_id):
+    return await session_collection.find_one(
+        {"_id": session_id, "userId": user_id, "revoke": False}
+    )
+
+
+# rotate refresh token
+async def rotateRefreshToken_hash(user_id, session_id, old_hash, new_hash):
+    result = await session_collection.update_one(
+        {
+            "_id": session_id,
+            "userId": user_id,
+            "revoke": False,
+            "refreshTokenHash": old_hash,
+        },
+        {
+            "$set": {
+                "refreshTokenHash": new_hash,
+            }
+        },
+    )
+    return result.modified_count == 1

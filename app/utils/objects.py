@@ -1,14 +1,19 @@
 from bson import ObjectId
-from fastapi import HTTPException
+from bson.errors import InvalidId
+from fastapi import HTTPException, status
 
 
-def to_Object_id(user_id: str) -> dict:
+def to_Object_id(id_str: str) -> ObjectId:
     try:
-        return ObjectId(user_id)
-    except:
-        raise HTTPException(status_code=404, detail="id not found")
+        return ObjectId(id_str)
+    except (InvalidId, TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid ID format",
+        )
 
 
-def from_Object_id(user_id: dict) -> dict:
-    user_id["_id"] = str(user_id["_id"])
-    return user_id
+def from_Object_id(doc: dict) -> dict:
+    if "_id" in doc:
+        doc["_id"] = str(doc["_id"])
+    return doc

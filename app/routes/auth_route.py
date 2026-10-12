@@ -13,6 +13,7 @@ from app.model.user_model import (
     userLogin,
     userRefreshToken,
 )
+from app.middleware import auth_middleware
 from app.schema.user_schema import UserCreate, UserLogin_Schema
 from app.schema.auth_schema import RefreshRequest, RefreshResponse
 from app.utils.Api_response import ApiResponse

@@ -7,6 +7,7 @@ db = client[DB_NAME]
 
 users_collection = db["users"]
 session_collection = db["sessions"]
+account_collection = db["account"]
 
 
 async def create_indexes():

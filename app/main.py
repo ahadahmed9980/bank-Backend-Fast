@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.routes.auth_route import router as auth_router
+from app.routes.account_routes import router as account_router
 from app.database.mongodb import create_indexes
 
 
@@ -14,3 +15,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router)
+app.include_router(account_router)

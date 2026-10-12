@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
@@ -21,10 +22,10 @@ class AccountData(BaseModel):
     createdAt: datetime
     updatedAt: datetime
 
-class AcountResponse(BaseModel):
-    status:bool
-    message:str
-    data:AccountData
+
+class AccountResponse(BaseModel):
+    message: str
+    account: dict[str, Any]
 
 class BalanceData(BaseModel):
     accountId: str

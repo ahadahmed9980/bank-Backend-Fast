@@ -8,9 +8,16 @@ db = client[DB_NAME]
 users_collection = db["users"]
 session_collection = db["sessions"]
 account_collection = db["account"]
+ledger_collection = db['ledger']
+transaction_collection=db['transaction']
 
 
 async def create_indexes():
     await users_collection.create_index([("email", ASCENDING)], unique=True)
 
     await session_collection.create_index([("userId", ASCENDING)])
+    await transaction_collection.create_index(
+    "idempotanceKey",
+    unique=True,
+)
+    
